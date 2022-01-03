@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.Toast
 import com.clone.sogatingapp_final.MainActivity
 import com.clone.sogatingapp_final.R
+import com.clone.sogatingapp_final.utils.FirebaseRef
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -29,14 +30,19 @@ class JoinActivity : AppCompatActivity() {
 
         val emailText = findViewById<TextInputEditText>(R.id.emailArea)
         val passwordText = findViewById<TextInputEditText>(R.id.passwordArea)
-        val nickname = findViewById<TextInputEditText>(R.id.nicknameArea)
+        val nicknameText = findViewById<TextInputEditText>(R.id.nicknameArea)
         val genderText = findViewById<TextInputEditText>(R.id.genderArea)
         val locationText = findViewById<TextInputEditText>(R.id.locationArea)
         val ageText = findViewById<TextInputEditText>(R.id.ageArea)
 
+        // 회원가입 버튼 클릭
         val registerBtn = findViewById<Button>(R.id.registerBtn)
-
         registerBtn.setOnClickListener {
+            val nickname = nicknameText.text.toString()
+            val gender = genderText.text.toString()
+            val location = locationText.text.toString()
+            val age = ageText.text.toString()
+
             auth.createUserWithEmailAndPassword(
                 emailText.text.toString(),
                 passwordText.text.toString()
@@ -45,7 +51,12 @@ class JoinActivity : AppCompatActivity() {
                     if (task.isSuccessful) {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d(TAG, "createUserWithEmail:success")
-                        val user = auth.currentUser
+                        val uid = auth.currentUser?.uid.toString()
+
+                        // 회원가입 성공시(DB에 정보 저장)
+                        val userInfo = UserDataModel(uid, nickname, gender, location, age)
+                        FirebaseRef.myRef.child(uid).setValue(userInfo)
+
                         val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)
                     } else {
