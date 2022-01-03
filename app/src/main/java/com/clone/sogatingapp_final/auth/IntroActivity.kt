@@ -11,13 +11,19 @@ class IntroActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_intro)
 
-        // 뷰 컴포넌트 가져오기
+        // 회원가입 이동
         val joinBtn = findViewById<Button>(R.id.joinBtn);
-
-        // 액티비티 이동
-        val intent = Intent(this, JoinActivity::class.java)
         joinBtn.setOnClickListener {
+            val intent = Intent(this, JoinActivity::class.java)
             startActivity(intent)
         }
+
+        // 로그인 화면 이동
+        val loginBtn = findViewById<Button>(R.id.loginBtn)
+        loginBtn.setOnClickListener{
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+        }
+
     }
 }
