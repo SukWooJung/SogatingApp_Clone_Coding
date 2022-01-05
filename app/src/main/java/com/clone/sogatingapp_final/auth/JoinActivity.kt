@@ -5,7 +5,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import com.clone.sogatingapp_final.MainActivity
 import com.clone.sogatingapp_final.R
 import com.clone.sogatingapp_final.utils.FirebaseRef
@@ -35,6 +40,16 @@ class JoinActivity : AppCompatActivity() {
         val genderText = findViewById<TextInputEditText>(R.id.genderArea)
         val locationText = findViewById<TextInputEditText>(R.id.locationArea)
         val ageText = findViewById<TextInputEditText>(R.id.ageArea)
+        val getImageBtn = findViewById<ImageView>(R.id.getImageBtn)
+
+        // 사진 가져오기
+        getImageBtn.bringToFront()
+        val registerForActivityResult = getRegisterForActivityResult(getImageBtn)
+        // 사진 가져오기 버튼 클릭
+        getImageBtn.setOnClickListener{
+            Log.d(TAG, "버튼 클릭됨")
+            registerForActivityResult.launch("image/*")
+        }
 
         // 회원가입 버튼 클릭
         val registerBtn = findViewById<Button>(R.id.registerBtn)
@@ -71,6 +86,16 @@ class JoinActivity : AppCompatActivity() {
                 }
         }
 
+    }
+
+    private fun getRegisterForActivityResult(getImageBtn : ImageView) : ActivityResultLauncher<String>{
+        val getAction = registerForActivityResult(
+            ActivityResultContracts.GetContent(),
+            ActivityResultCallback {
+                getImageBtn.setImageURI(it)
+            }
+        )
+        return getAction
     }
 
 
