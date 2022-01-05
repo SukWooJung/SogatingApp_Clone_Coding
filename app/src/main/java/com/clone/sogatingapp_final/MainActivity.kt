@@ -3,13 +3,18 @@ package com.clone.sogatingapp_final
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import com.clone.sogatingapp_final.auth.IntroActivity
+import com.clone.sogatingapp_final.auth.UserDataModel
 import com.clone.sogatingapp_final.slider.CardStackAdapter
-import com.clone.sogatingapp_final.utils.FirebaseAuthUtils
-import com.google.firebase.auth.FirebaseAuth
+import com.clone.sogatingapp_final.utils.FirebaseRef
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.yuyakaido.android.cardstackview.CardStackLayoutManager
 import com.yuyakaido.android.cardstackview.CardStackListener
@@ -18,8 +23,10 @@ import com.yuyakaido.android.cardstackview.Direction
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var cardStackAdapter : CardStackAdapter
-    lateinit var manager : CardStackLayoutManager
+    lateinit var cardStackAdapter: CardStackAdapter
+    lateinit var manager: CardStackLayoutManager
+    val TAG = "MainActivity"
+    val userList = mutableListOf<UserDataModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +34,7 @@ class MainActivity : AppCompatActivity() {
 
         // 로그아웃 버튼
         val logoutBtn = findViewById<Button>(R.id.logoutBtn)
-        logoutBtn.setOnClickListener{
+        logoutBtn.setOnClickListener {
             Firebase.auth.signOut()
             val intent = Intent(this, IntroActivity::class.java)
             startActivity(intent)
@@ -37,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         // 카드 스택뷰
         val cardStackView = findViewById<CardStackView>(R.id.cardSTackView)
 
-        manager = CardStackLayoutManager(baseContext, object : CardStackListener{
+        manager = CardStackLayoutManager(baseContext, object : CardStackListener {
             override fun onCardDragging(direction: Direction?, ratio: Float) {
             }
 
@@ -56,13 +63,35 @@ class MainActivity : AppCompatActivity() {
             override fun onCardDisappeared(view: View?, position: Int) {
             }
         })
-        val testList = mutableListOf<String>()
-        testList.add("a")
-        testList.add("b")
-        testList.add("c")
-        cardStackAdapter = CardStackAdapter(baseContext, testList)
+
+        getUserDataList()
+
+        cardStackAdapter = CardStackAdapter(baseContext, userList)
         cardStackView.layoutManager = manager
         cardStackView.adapter = cardStackAdapter
+
+    }
+
+    private fun getUserDataList() {
+        val postListener = object : ValueEventListener {
+            // 경로의 전체 내용을 읽고 변경사항을 수신 대기합니다.
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // 우리가 가져온 dataSnapshot 은 JsonArray 형태
+                for (dataModel in dataSnapshot.children) {
+                    val user = dataModel.getValue<UserDataModel>()
+                    // val user = dataModel.getValue(UserDataModel::class.java)
+                    userList.add(user!!)
+                    Log.d(TAG, user.toString())
+                    cardStackAdapter.notifyDataSetChanged()
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Getting Post failed, log a message
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException())
+            }
+        }
+        FirebaseRef.userInfoRef.addValueEventListener(postListener)
 
     }
 }

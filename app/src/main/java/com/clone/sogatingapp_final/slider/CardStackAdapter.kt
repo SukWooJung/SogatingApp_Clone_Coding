@@ -4,10 +4,12 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.clone.sogatingapp_final.R
+import com.clone.sogatingapp_final.auth.UserDataModel
 
-class CardStackAdapter(val context : Context, val items : List<String>) :
+class CardStackAdapter(val context : Context, val items : List<UserDataModel>) :
     RecyclerView.Adapter<CardStackAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -25,8 +27,15 @@ class CardStackAdapter(val context : Context, val items : List<String>) :
     }
 
     inner class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
+        private val name: TextView = itemView.findViewById<TextView>(R.id.nameTxt)
+        private val age: TextView = itemView.findViewById<TextView>(R.id.ageTxt)
+        private val location: TextView = itemView.findViewById<TextView>(R.id.locationTxt)
 
-        fun binding(data: String) {
+
+        fun binding(data: UserDataModel) {
+            name.text = data.nickname
+            age.text = data.age
+            location.text = data.location
 
         }
     }

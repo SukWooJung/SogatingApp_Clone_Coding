@@ -18,6 +18,7 @@
             android:layout_weight="0.75"/>
 
         <TextView
+            android:id="@+id/nameTxt"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_margin="5dp"
@@ -28,6 +29,7 @@
             android:layout_weight="0.08"/>
 
         <TextView
+            android:id="@+id/ageTxt"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_margin="5dp"
@@ -38,6 +40,7 @@
             android:layout_weight="0.08"/>
 
         <TextView
+            android:id="@+id/locationTxt"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_margin="5dp"
