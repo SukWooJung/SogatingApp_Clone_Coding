@@ -1,11 +1,10 @@
 package com.clone.sogatingapp_final.auth
 
 data class UserDataModel(
-    val uid: String?,
-    val nickname: String?,
-    val gender: String?,
-    val location: String?,
-    val age: String?
-    ) {
+    val uid: String? = null,
+    val nickname: String? = null,
+    val gender: String? = null,
+    val location: String? = null,
+    val age: String? = null,
+)
 
-}

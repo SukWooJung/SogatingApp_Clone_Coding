@@ -17,7 +17,8 @@ import com.google.firebase.ktx.Firebase
 class JoinActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
-    private companion object{
+
+    private companion object {
         const val TAG = "JoinActivity"
     }
 
@@ -55,8 +56,8 @@ class JoinActivity : AppCompatActivity() {
 
                         // 회원가입 성공시(DB에 정보 저장)
                         val userInfo = UserDataModel(uid, nickname, gender, location, age)
-                        FirebaseRef.myRef.child(uid).setValue(userInfo)
-
+                        writeNewUser(uid, userInfo)
+                        // StartActivity 로 이동
                         val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)
                     } else {
@@ -72,5 +73,9 @@ class JoinActivity : AppCompatActivity() {
 
     }
 
+
+    private fun writeNewUser(uid : String, userInfo : UserDataModel) {
+        FirebaseRef.userInfoRef.child(uid).setValue(userInfo)
+    }
 
 }
