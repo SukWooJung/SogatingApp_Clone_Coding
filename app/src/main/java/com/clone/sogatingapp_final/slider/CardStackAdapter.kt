@@ -4,10 +4,15 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.clone.sogatingapp_final.MainActivity
 import com.clone.sogatingapp_final.R
 import com.clone.sogatingapp_final.auth.UserDataModel
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 
 class CardStackAdapter(val context : Context, val items : List<UserDataModel>) :
     RecyclerView.Adapter<CardStackAdapter.ViewHolder>() {
@@ -30,13 +35,22 @@ class CardStackAdapter(val context : Context, val items : List<UserDataModel>) :
         private val name: TextView = itemView.findViewById<TextView>(R.id.nameTxt)
         private val age: TextView = itemView.findViewById<TextView>(R.id.ageTxt)
         private val location: TextView = itemView.findViewById<TextView>(R.id.locationTxt)
-
+        private val image: ImageView = itemView.findViewById(R.id.profileImageArea)
 
         fun binding(data: UserDataModel) {
             name.text = data.nickname
             age.text = data.age
             location.text = data.location
 
+            // 이미지
+            val storageRef = Firebase.storage.reference.child(data.uid + ".png")
+            storageRef.downloadUrl.addOnCompleteListener{ // OnCompleteListener 람다
+                if (it.isSuccessful) {
+                    Glide.with(context)
+                        .load(it.result)
+                        .into(image)
+                }
+            }
         }
     }
 
