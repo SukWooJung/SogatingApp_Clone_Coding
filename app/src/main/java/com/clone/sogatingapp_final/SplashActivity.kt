@@ -22,14 +22,14 @@ class SplashActivity : AppCompatActivity() {
 
         val uid = FirebaseAuthUtils.getUid()
 
-        if (uid != "null") { // 이미 로그인한 UID 기록이 있으면
+        if (uid != "null") { // 이미 로그인한 UID 기록이 있으면 MainActivity 로
             Handler().postDelayed({
                 val intent = Intent(this, MainActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
                 startActivity(intent)
                 finish()
             }, DURATION)
-        } else {
+        } else { // 로그인한 UID 기록이 없으면 IntroActivity 로
             Handler().postDelayed({
                 val intent = Intent(this, IntroActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
