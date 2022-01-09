@@ -55,4 +55,7 @@ dependencies {
 
     // Firebase database
     implementation 'com.google.firebase:firebase-database-ktx'
+
+    // Firebase storage
+    implementation 'com.google.firebase:firebase-storage-ktx'
 }
