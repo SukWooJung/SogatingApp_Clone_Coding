@@ -14,7 +14,6 @@
             android:id="@+id/profileImageArea"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:src="@drawable/auth_image"
             android:layout_weight="0.75"/>
 
         <TextView
