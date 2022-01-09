@@ -6,8 +6,10 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import com.clone.sogatingapp_final.auth.IntroActivity
 import com.clone.sogatingapp_final.auth.UserDataModel
+import com.clone.sogatingapp_final.setting.SettingActivity
 import com.clone.sogatingapp_final.slider.CardStackAdapter
 import com.clone.sogatingapp_final.utils.FirebaseRef
 import com.google.firebase.auth.ktx.auth
@@ -32,16 +34,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // 로그아웃 버튼
-        val logoutBtn = findViewById<Button>(R.id.logoutBtn)
-        logoutBtn.setOnClickListener {
-            Firebase.auth.signOut()
-            val intent = Intent(this, IntroActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
+        // SettingPage 가기
+        goToSettingPage()
 
         // 카드 스택뷰
+        setCardStackView()
+    }
+
+    private fun setCardStackView() {
         val cardStackView = findViewById<CardStackView>(R.id.cardSTackView)
 
         manager = CardStackLayoutManager(baseContext, object : CardStackListener {
@@ -69,7 +69,14 @@ class MainActivity : AppCompatActivity() {
         cardStackAdapter = CardStackAdapter(baseContext, userList)
         cardStackView.layoutManager = manager
         cardStackView.adapter = cardStackAdapter
+    }
 
+    private fun goToSettingPage() {
+        val settingBtn: ImageView = findViewById(R.id.settingBtn)
+        settingBtn.setOnClickListener{
+            val intent = Intent(this, SettingActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun getUserDataList() {
