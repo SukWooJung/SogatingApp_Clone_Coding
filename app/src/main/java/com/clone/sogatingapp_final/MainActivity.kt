@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getUserDataList() {
-        val postListener = object : ValueEventListener {
+        val userListener = object : ValueEventListener {
             // 경로의 전체 내용을 읽고 변경사항을 수신 대기합니다.
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // 우리가 가져온 dataSnapshot 은 JsonArray 형태
@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity() {
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException())
             }
         }
-        FirebaseRef.userInfoRef.addValueEventListener(postListener)
+        FirebaseRef.userInfoRef.addValueEventListener(userListener)
 
     }
 }
