@@ -61,11 +61,13 @@ class MainActivity : AppCompatActivity() {
             override fun onCardSwiped(direction: Direction?) {
 
                 if (direction == Direction.Right) {
-                    Toast.makeText(baseContext, "right", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(baseContext, "좋아요", Toast.LENGTH_SHORT).show()
+                    val likeUserUid = userList[userCount].uid.toString()
+                    userLikeOtherUser(myInfo.uid.toString(), likeUserUid)
                 }
 
                 if(direction == Direction.Left) {
-                    Toast.makeText(baseContext, "left", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(baseContext, "싫어요", Toast.LENGTH_SHORT).show()
                 }
 
                 userCount += 1
@@ -145,5 +147,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         FirebaseRef.userInfoRef.child(uid).addValueEventListener(getMyDataListener)
+    }
+
+    // 자신의 UID와 좋아요한 다른 사람의 UID 값이 저장되어야 하겠지
+    private fun userLikeOtherUser(myUid :String, otherUid : String){
+        FirebaseRef.userLikeRef.child(myUid).child(otherUid).setValue("true")
     }
 }
