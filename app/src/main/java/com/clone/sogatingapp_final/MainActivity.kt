@@ -19,6 +19,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.yuyakaido.android.cardstackview.CardStackLayoutManager
@@ -59,15 +60,18 @@ class MainActivity : AppCompatActivity() {
 
             // 넘겼을 때 방향 설정
             override fun onCardSwiped(direction: Direction?) {
-
                 if (direction == Direction.Right) {
-                    Toast.makeText(baseContext, "좋아요", Toast.LENGTH_SHORT).show()
+                    // 좋아요한 유저 uid 가져오기
                     val likeUserUid = userList[userCount].uid.toString()
+                    println("likeUserUid: $likeUserUid")
+                    // 좋아요한 유저 정보 DB에 반영
                     userLikeOtherUser(myInfo.uid.toString(), likeUserUid)
+                    // 좋아요한 유저 매칭
+                    checkOtherUserLikeMe(myInfo.uid.toString(), likeUserUid)
                 }
 
                 if(direction == Direction.Left) {
-                    Toast.makeText(baseContext, "싫어요", Toast.LENGTH_SHORT).show()
+
                 }
 
                 userCount += 1
@@ -76,7 +80,7 @@ class MainActivity : AppCompatActivity() {
                     userCount = 0;
                     userList.clear()
                     getDifferentGenderUserDataList()
-                    Toast.makeText(baseContext, "유저를 새롭게 받아 옵니다", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(baseContext, "유저를 새롭게 받아 옵니다", Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -152,5 +156,25 @@ class MainActivity : AppCompatActivity() {
     // 자신의 UID와 좋아요한 다른 사람의 UID 값이 저장되어야 하겠지
     private fun userLikeOtherUser(myUid :String, otherUid : String){
         FirebaseRef.userLikeRef.child(myUid).child(otherUid).setValue("true")
+    }
+
+    // 내가 좋아하는 사람의 좋아요 정보를 가져오기
+    private fun checkOtherUserLikeMe(myUid :String, otherUid : String) {
+        val getOtherLikeDataListener = object : ValueEventListener{
+            // 있다면 true 데이터를 들고 왔을 것
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (data in snapshot.children) {
+                    val likeUid = data.key.toString()
+                    if (likeUid == myUid) {
+                        Toast.makeText(this@MainActivity, "매칭성공", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        }
+        FirebaseRef.userLikeRef.child(otherUid).addValueEventListener(getOtherLikeDataListener)
     }
 }
