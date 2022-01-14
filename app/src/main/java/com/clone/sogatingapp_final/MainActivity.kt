@@ -9,25 +9,19 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.clone.sogatingapp_final.auth.IntroActivity
-import com.clone.sogatingapp_final.auth.UserDataModel
-import com.clone.sogatingapp_final.setting.MyPageActivity
+import com.clone.sogatingapp_final.auth.User
 import com.clone.sogatingapp_final.setting.SettingActivity
 import com.clone.sogatingapp_final.slider.CardStackAdapter
 import com.clone.sogatingapp_final.utils.FirebaseAuthUtils
 import com.clone.sogatingapp_final.utils.FirebaseRef
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
-import com.google.firebase.ktx.Firebase
 import com.yuyakaido.android.cardstackview.CardStackLayoutManager
 import com.yuyakaido.android.cardstackview.CardStackListener
 import com.yuyakaido.android.cardstackview.CardStackView
@@ -35,11 +29,11 @@ import com.yuyakaido.android.cardstackview.Direction
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var myInfo: UserDataModel
+    lateinit var myInfo: User
     lateinit var cardStackAdapter: CardStackAdapter
     lateinit var manager: CardStackLayoutManager
     val TAG = "MainActivity"
-    val userList = mutableListOf<UserDataModel>()
+    val userList = mutableListOf<User>()
 
     private var userCount = 0
 
@@ -73,9 +67,6 @@ class MainActivity : AppCompatActivity() {
                     userLikeOtherUser(myInfo.uid.toString(), likeUserUid)
                     // 좋아요한 유저 매칭
                     checkOtherUserLikeMe(myInfo.uid.toString(), likeUserUid)
-                    // 매칭 메세지 보내기
-                    createNotificationChannel()
-                    sendMatchingSuccessNotification()
                 }
 
                 if (direction == Direction.Left) {
@@ -127,7 +118,7 @@ class MainActivity : AppCompatActivity() {
                 // 우리가 가져온 dataSnapshot 은 JsonArray 형태
                 for (dataModel in dataSnapshot.children) {
                     // val user = dataModel.getValue(UserDataModel::class.java)
-                    val user = dataModel.getValue<UserDataModel>()
+                    val user = dataModel.getValue<User>()
                     Log.d(TAG, user.toString())
                     if (user?.gender != myInfo.gender) {
                         userList.add(user!!)
@@ -150,7 +141,7 @@ class MainActivity : AppCompatActivity() {
         val getMyDataListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 Log.d(TAG, snapshot.toString())
-                myInfo = snapshot.getValue<UserDataModel>()!!
+                myInfo = snapshot.getValue<User>()!!
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -175,6 +166,9 @@ class MainActivity : AppCompatActivity() {
                     val likeUid = data.key.toString()
                     if (likeUid == myUid) {
                         Toast.makeText(this@MainActivity, "매칭성공", Toast.LENGTH_SHORT).show()
+                        // 매칭 메세지 보내기
+                        createNotificationChannel()
+                        sendMatchingSuccessNotification()
                     }
                 }
             }

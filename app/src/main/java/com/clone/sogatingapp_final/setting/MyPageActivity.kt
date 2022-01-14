@@ -7,17 +7,15 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.clone.sogatingapp_final.R
-import com.clone.sogatingapp_final.auth.UserDataModel
+import com.clone.sogatingapp_final.auth.User
 import com.clone.sogatingapp_final.utils.FirebaseAuthUtils
 import com.clone.sogatingapp_final.utils.FirebaseRef
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import org.w3c.dom.Text
 
 class MyPageActivity : AppCompatActivity() {
 
@@ -39,7 +37,7 @@ class MyPageActivity : AppCompatActivity() {
         val getMyDataListener = object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 Log.d(TAG, snapshot.toString())
-                val myInfo = snapshot.getValue<UserDataModel>()
+                val myInfo = snapshot.getValue<User>()
                 showMyInfo(myInfo)
             }
 
@@ -51,7 +49,7 @@ class MyPageActivity : AppCompatActivity() {
         FirebaseRef.userInfoRef.child(uid).addValueEventListener(getMyDataListener)
     }
 
-    fun showMyInfo(myInfo : UserDataModel?){
+    fun showMyInfo(myInfo : User?){
         val uidTxt: TextView = findViewById(R.id.uidTxt)
         val nameTxt: TextView = findViewById(R.id.nameTxt)
         val genderTxt: TextView = findViewById(R.id.genderTxt)

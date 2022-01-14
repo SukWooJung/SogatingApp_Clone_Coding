@@ -19,6 +19,17 @@
         android:textStyle="bold" />
 
     <Button
+        android:id="@+id/myMatchingBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="@drawable/button_round"
+        android:text="내가 좋아요한 사람들"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <Button
         android:id="@+id/logoutBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

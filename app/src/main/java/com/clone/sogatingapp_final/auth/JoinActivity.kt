@@ -73,7 +73,7 @@ class JoinActivity : AppCompatActivity() {
                         val uid = auth.currentUser?.uid.toString()
 
                         // 회원가입 성공시(DB에 정보 저장)
-                        val userInfo = UserDataModel(uid, nickname, gender, location, age)
+                        val userInfo = User(uid, nickname, gender, location, age)
                         writeNewUser(uid, userInfo)
 
                         // 이미지 업로드 (storage 에 이미지 저장)
@@ -106,7 +106,7 @@ class JoinActivity : AppCompatActivity() {
     }
 
 
-    private fun writeNewUser(uid: String, userInfo: UserDataModel) {
+    private fun writeNewUser(uid: String, userInfo: User) {
         FirebaseRef.userInfoRef.child(uid).setValue(userInfo)
     }
 

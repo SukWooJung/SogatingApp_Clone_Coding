@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Button
 import com.clone.sogatingapp_final.R
 import com.clone.sogatingapp_final.auth.IntroActivity
+import com.clone.sogatingapp_final.message.MyMatchingActivity
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
@@ -19,6 +20,9 @@ class SettingActivity : AppCompatActivity() {
 
         // 마이페이지로
         goToMyPage()
+
+        // 내가 좋아요한 사람 목록보기
+        goToMyMatching()
     }
 
     private fun goToMyPage() {
@@ -26,7 +30,14 @@ class SettingActivity : AppCompatActivity() {
         myPageBtn.setOnClickListener {
             val intent = Intent(this, MyPageActivity::class.java)
             startActivity(intent)
-            finish()
+        }
+    }
+
+    private fun goToMyMatching() {
+        val myMatchingBtn = findViewById<Button>(R.id.myMatchingBtn)
+        myMatchingBtn.setOnClickListener {
+            val intent = Intent(this, MyMatchingActivity::class.java)
+            startActivity(intent)
         }
     }
 

@@ -8,13 +8,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.clone.sogatingapp_final.MainActivity
 import com.clone.sogatingapp_final.R
-import com.clone.sogatingapp_final.auth.UserDataModel
+import com.clone.sogatingapp_final.auth.User
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 
-class CardStackAdapter(val context : Context, val items : List<UserDataModel>) :
+class CardStackAdapter(val context : Context, val items : List<User>) :
     RecyclerView.Adapter<CardStackAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -37,7 +36,7 @@ class CardStackAdapter(val context : Context, val items : List<UserDataModel>) :
         private val location: TextView = itemView.findViewById<TextView>(R.id.locationTxt)
         private val image: ImageView = itemView.findViewById(R.id.profileImageArea)
 
-        fun binding(data: UserDataModel) {
+        fun binding(data: User) {
             name.text = data.nickname
             age.text = data.age
             location.text = data.location
