@@ -1,6 +1,10 @@
 package com.clone.sogatingapp_final
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +12,8 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.clone.sogatingapp_final.auth.IntroActivity
 import com.clone.sogatingapp_final.auth.UserDataModel
 import com.clone.sogatingapp_final.setting.MyPageActivity
@@ -29,7 +35,7 @@ import com.yuyakaido.android.cardstackview.Direction
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var myInfo : UserDataModel
+    lateinit var myInfo: UserDataModel
     lateinit var cardStackAdapter: CardStackAdapter
     lateinit var manager: CardStackLayoutManager
     val TAG = "MainActivity"
@@ -63,14 +69,16 @@ class MainActivity : AppCompatActivity() {
                 if (direction == Direction.Right) {
                     // 좋아요한 유저 uid 가져오기
                     val likeUserUid = userList[userCount].uid.toString()
-                    println("likeUserUid: $likeUserUid")
                     // 좋아요한 유저 정보 DB에 반영
                     userLikeOtherUser(myInfo.uid.toString(), likeUserUid)
                     // 좋아요한 유저 매칭
                     checkOtherUserLikeMe(myInfo.uid.toString(), likeUserUid)
+                    // 매칭 메세지 보내기
+                    createNotificationChannel()
+                    sendMatchingSuccessNotification()
                 }
 
-                if(direction == Direction.Left) {
+                if (direction == Direction.Left) {
 
                 }
 
@@ -80,7 +88,7 @@ class MainActivity : AppCompatActivity() {
                     userCount = 0;
                     userList.clear()
                     getDifferentGenderUserDataList()
-//                    Toast.makeText(baseContext, "유저를 새롭게 받아 옵니다", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(baseContext, "유저를 새롭게 받아 옵니다", Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -106,7 +114,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun goToSettingPage() {
         val settingBtn: ImageView = findViewById(R.id.settingBtn)
-        settingBtn.setOnClickListener{
+        settingBtn.setOnClickListener {
             val intent = Intent(this, SettingActivity::class.java)
             startActivity(intent)
         }
@@ -139,7 +147,7 @@ class MainActivity : AppCompatActivity() {
     private fun getMyInfo() {
         val uid = FirebaseAuthUtils.getUid()
 
-        val getMyDataListener = object : ValueEventListener{
+        val getMyDataListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 Log.d(TAG, snapshot.toString())
                 myInfo = snapshot.getValue<UserDataModel>()!!
@@ -154,13 +162,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     // 자신의 UID와 좋아요한 다른 사람의 UID 값이 저장되어야 하겠지
-    private fun userLikeOtherUser(myUid :String, otherUid : String){
+    private fun userLikeOtherUser(myUid: String, otherUid: String) {
         FirebaseRef.userLikeRef.child(myUid).child(otherUid).setValue("true")
     }
 
     // 내가 좋아하는 사람의 좋아요 정보를 가져오기
-    private fun checkOtherUserLikeMe(myUid :String, otherUid : String) {
-        val getOtherLikeDataListener = object : ValueEventListener{
+    private fun checkOtherUserLikeMe(myUid: String, otherUid: String) {
+        val getOtherLikeDataListener = object : ValueEventListener {
             // 있다면 true 데이터를 들고 왔을 것
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (data in snapshot.children) {
@@ -176,5 +184,38 @@ class MainActivity : AppCompatActivity() {
 
         }
         FirebaseRef.userLikeRef.child(otherUid).addValueEventListener(getOtherLikeDataListener)
+    }
+
+    private fun createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "소개팅앱"
+            val descriptionText = "매칭이 선사되었습니다 !!"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel("TEST_CHANNEL_ID", name, importance).apply {
+                description = descriptionText
+            }
+            // Register the channel with the system
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    private fun sendMatchingSuccessNotification(){
+        var builder = NotificationCompat.Builder(this, "TEST_CHANNEL_ID")
+            .setSmallIcon(R.drawable.profile_img)
+            .setContentTitle("매칭 완료")
+            .setContentText("매칭이 완료되었습니다 ~!!")
+            .setStyle(NotificationCompat.BigTextStyle()
+                .bigText("매칭이 완료되었습니다 ~!!\n자세한 사항은 탭을 눌러 확인하세요 !"))
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        with(NotificationManagerCompat.from(this)) {
+            // notificationId is a unique int for each notification that you must define
+            notify(123, builder.build())
+        }
+
     }
 }
