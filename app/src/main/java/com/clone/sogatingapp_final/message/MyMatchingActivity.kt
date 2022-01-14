@@ -1,8 +1,13 @@
 package com.clone.sogatingapp_final.message
 
+import android.content.res.Resources
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.clone.sogatingapp_final.R
@@ -19,8 +24,8 @@ class MyMatchingActivity : AppCompatActivity() {
 
     var myLikeUidList = mutableListOf<String>()
     private var myLikeList = mutableListOf<User>()
-    private lateinit var myLikeAdapter : MyLikeAdapter
-    private lateinit var myLikeManager : RecyclerView.LayoutManager
+    private lateinit var myLikeAdapter: MyLikeAdapter
+    private lateinit var myLikeManager: RecyclerView.LayoutManager
 
     companion object {
         const val TAG = "MyMatchingActivity"
@@ -43,6 +48,15 @@ class MyMatchingActivity : AppCompatActivity() {
         myLikeAdapter = MyLikeAdapter(this, myLikeList)
         likeRecyclerView.layoutManager = myLikeManager
         likeRecyclerView.adapter = myLikeAdapter
+
+        // clickListener 설정 매칭된 회원인지 알려주기
+        val itemClickListener = object : MyLikeAdapter.ItemClickListener {
+            override fun onClick(view: View, position: Int) {
+                val liked = myLikeAdapter.likes[position]
+                checkOtherUserLikeMe(liked.uid.toString(), view, position)
+            }
+        }
+        myLikeAdapter.setClickListener(itemClickListener)
     }
 
     // 내가 좋아하는 사람들의 모든 UID 가져와서, UID로 사람 정보 가져오기
@@ -84,29 +98,36 @@ class MyMatchingActivity : AppCompatActivity() {
     }
 
     // 내가 좋아하는 사람의 좋아요 정보를 가져와서, 날 좋아했는지 매칭 확인하기
-//    private fun checkOtherUserLikeMe(otherUid: String): Boolean {
-//        var check = false;
-//        val getOtherLikeDataListener = object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                for (data in snapshot.children) {
-//                    val likeUid = data.key.toString()
-//                    println("상대가 좋아요한 사람")
-//                    if (likeUid == FirebaseAuthUtils.getUid()) {
-//                        println("상대가 나를 좋아함 !")
-//                        check = true;
-//                        break;
-//                    }
-//                }
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//                Log.d(TAG, "다른사람의 UID 가져오기 실패")
-//            }
-//
-//        }
-//        FirebaseRef.userLikeRef.child(otherUid).addValueEventListener(getOtherLikeDataListener)
-//        return check;
-//    }
+    private fun checkOtherUserLikeMe(otherUid: String, view: View, position: Int) {
+        val getOtherLikeDataListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val likeToken = view.findViewById<ImageView>(R.id.likeToken)
+                var check = false;
+                for (data in snapshot.children) {
+                    val likeUid = data.key.toString()
+                    if (likeUid == FirebaseAuthUtils.getUid()) {
+                        Toast.makeText(baseContext, "나와 매칭된 회원입니당 !!", Toast.LENGTH_SHORT)
+                            .show()
+                        likeToken.setBackgroundColor(Color.GREEN)
+                        check = true;
+                        break;
+                    }
+                }
+                if (!check) {
+                    Toast.makeText(baseContext, "나와 매칭된 회원이 아닙니다 ㅠㅠ", Toast.LENGTH_SHORT)
+                        .show()
+                    likeToken.setBackgroundColor(Color.RED)
+                }
+            }
+
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.d(TAG, "다른사람의 UID 가져오기 실패")
+            }
+
+        }
+        FirebaseRef.userLikeRef.child(otherUid).addValueEventListener(getOtherLikeDataListener)
+    }
 
 //    // 매칭된 사람들의 리스트 반환
 //    private fun getMyMatchingList(myLikes: MutableList<String>) {

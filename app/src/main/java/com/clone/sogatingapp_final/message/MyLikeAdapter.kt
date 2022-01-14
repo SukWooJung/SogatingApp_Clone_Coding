@@ -13,7 +13,9 @@ import com.clone.sogatingapp_final.auth.User
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 
-class MyLikeAdapter(val context : Context, private val likes : MutableList<User>) : RecyclerView.Adapter<MyLikeAdapter.ViewHolder>() {
+class MyLikeAdapter(val context : Context, val likes : MutableList<User>) : RecyclerView.Adapter<MyLikeAdapter.ViewHolder>(){
+
+    lateinit var itemClickListener: ItemClickListener
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -29,11 +31,27 @@ class MyLikeAdapter(val context : Context, private val likes : MutableList<User>
         return likes.size
     }
 
+    fun setClickListener(itemClickListener: ItemClickListener){
+        this.itemClickListener = itemClickListener
+    }
+
+    interface ItemClickListener {
+        fun onClick(view : View, position: Int)
+    }
+
     inner class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
+        init {
+            itemView.setOnClickListener{
+                val position = adapterPosition
+                itemClickListener?.onClick(it,position)
+            }
+        }
         private  val likeImage = itemView.findViewById<ImageView>(R.id.likeImage)
         private  val likeName = itemView.findViewById<TextView>(R.id.likeName)
         private  val likeAge = itemView.findViewById<TextView>(R.id.likeAge)
         private  val likeCity = itemView.findViewById<TextView>(R.id.likeCity)
+
+
 
         fun setItem(liked: User) {
             likeName.text = liked.nickname
@@ -49,7 +67,6 @@ class MyLikeAdapter(val context : Context, private val likes : MutableList<User>
                         .into(likeImage)
                 }
             }
-
         }
     }
 }
