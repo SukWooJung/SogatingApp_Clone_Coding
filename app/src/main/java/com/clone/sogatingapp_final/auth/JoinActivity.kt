@@ -14,11 +14,14 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.clone.sogatingapp_final.MainActivity
 import com.clone.sogatingapp_final.R
+import com.clone.sogatingapp_final.SplashActivity
 import com.clone.sogatingapp_final.utils.FirebaseRef
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.ktx.storage
 import java.io.ByteArrayOutputStream
 
@@ -71,13 +74,31 @@ class JoinActivity : AppCompatActivity() {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d(TAG, "createUserWithEmail:success")
                         val uid = auth.currentUser?.uid.toString()
+                        // token 가져오기
+                        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+                            if (!task.isSuccessful) {
+                                Log.w(SplashActivity.TAG, "Fetching FCM registration token failed", task.exception)
+                                return@OnCompleteListener
+                            }
 
-                        // 회원가입 성공시(DB에 정보 저장)
-                        val userInfo = User(uid, nickname, gender, location, age)
-                        writeNewUser(uid, userInfo)
+                            // Get new FCM registration token
+                            val token = task.result
 
-                        // 이미지 업로드 (storage 에 이미지 저장)
-                        uploadImage(uploadingImageView, uid)
+                            // 회원가입 성공시(DB에 정보 저장)
+                            val userInfo = User(uid, nickname, gender, location, age, token)
+                            writeNewUser(uid, userInfo)
+
+                            // 이미지 업로드 (storage 에 이미지 저장)
+                            uploadImage(uploadingImageView, uid)
+
+                            // Log and toast
+                            Log.e(SplashActivity.TAG, token)
+                        })
+
+
+
+
+
 
                         // StartActivity 로 이동
                         val intent = Intent(this, MainActivity::class.java)
